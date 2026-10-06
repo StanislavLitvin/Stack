@@ -46,7 +46,14 @@ enum Stack_Error_Status
   ERROR_CLOSING_ERROR_FILE      = -6,
   ERROR_LACK_OF_MEMORY          = -7,
   ERROR_LEFT_CANARY_CORRUPTED   = -8,
-  ERROR_RIGHT_CANARY_CORRUPTED  = -9
+  ERROR_RIGHT_CANARY_CORRUPTED  = -9,
+  ERROR_INCORRECT_RESIZE_MODE   = -10
+};
+
+enum Mode_For_Resize
+{
+  RESIZE_UP   = 1,
+  RESIZE_DOWN = 2
 };
 
 void Clear_Log_File();
@@ -55,10 +62,9 @@ Stack_Error_Status Stack_Init(Stack_t* Stk, size_t Capacity
 Stack_Error_Status Stack_Push(Stack_t* Stk, Stack_Elem_t Value);
 Stack_Elem_t Stack_Pop(Stack_t* Stk);
 void Stack_Destroy(Stack_t* Stk);
-Stack_Error_Status Stack_Error(Stack_t* Stk);
+Stack_Error_Status Stack_Verify(Stack_t* Stk);
 Stack_Error_Status Stack_Dumb(Stack_t* Stk);
-Stack_Error_Status Resize_Up(Stack_t* Stk);
-Stack_Error_Status Resize_Down(Stack_t* Stk);
+Stack_Error_Status Resize(Stack_t* Stk, Mode_For_Resize Mode);
 
 int main()
 {
@@ -78,10 +84,16 @@ int main()
     printf(RED "ERROR: error opening or closing error file\n" RESET);
   for (Stack_Elem_t i = 1; i <= 15; i++)
   {
-    if (Stack_Push(&Stk1, i * 10) == ERROR_LACK_OF_MEMORY)
+    Stack_Error_Status Temp = Stack_Push(&Stk1, i * 10);
+    if (Temp == ERROR_LACK_OF_MEMORY)
     {
       Stack_Destroy(&Stk1);
       return ERROR_LACK_OF_MEMORY;
+    }
+    if (Temp == ERROR_INCORRECT_RESIZE_MODE)
+    {
+      Stack_Destroy(&Stk1);
+      return ERROR_INCORRECT_RESIZE_MODE;
     }
   }
 
@@ -155,33 +167,46 @@ Stack_Error_Status Stack_Init(Stack_t* Stk, size_t Capacity
 
 Stack_Error_Status Stack_Push(Stack_t* Stk, Stack_Elem_t Value)
 {
-  assert(Stack_Error(Stk) == EVERYTHING_OK);
+  assert(Stack_Verify(Stk) == EVERYTHING_OK);
 
   if (Stk->Size == Stk->Capacity)
   {
-    if (Resize_Up(Stk) == ERROR_LACK_OF_MEMORY)//TODO Resize общий
+    Stack_Error_Status Temp = Resize(Stk, RESIZE_UP);
+    if (Temp == ERROR_LACK_OF_MEMORY)
     {
-      printf("ERROR: lack of memory\n");
+      printf(RED "ERROR: lack of memory\n" RESET);
       return ERROR_LACK_OF_MEMORY;
+    }
+    if (Temp == ERROR_INCORRECT_RESIZE_MODE)
+    {
+      printf(RED "ERROR: incorrect resize mode\n" RESET);
+      return ERROR_INCORRECT_RESIZE_MODE;
     }
   }
 
   Stk->Data[Stk->Size++] = Value;
 
-  assert(Stack_Error(Stk) == EVERYTHING_OK);
+  assert(Stack_Verify(Stk) == EVERYTHING_OK);
 
   return EVERYTHING_OK;
 }
 
 Stack_Elem_t Stack_Pop(Stack_t* Stk)
 {
-  assert(Stack_Error(Stk) == EVERYTHING_OK);
+  assert(Stack_Verify(Stk) == EVERYTHING_OK);
 
-  if ((Stk->Capacity >= 4 * STACK_START_NUMBERS_ELEM) && (Stk->Size - 1 == Stk->Capacity / 4))
+  if ((Stk->Capacity >= 4 * STACK_START_NUMBERS_ELEM) &&
+      (Stk->Size - 1 == Stk->Capacity / 4))
   {
-    if (Resize_Down(Stk) == ERROR_LACK_OF_MEMORY)
+    Stack_Error_Status Temp = Resize(Stk, RESIZE_DOWN);
+    if (Temp == ERROR_LACK_OF_MEMORY)
     {
-      printf("ERROR: lack of memory\n");
+      printf(RED "ERROR: lack of memory\n" RESET);
+      return ERROR_STATUS_STACK_POP;
+    }
+    if (Temp == ERROR_INCORRECT_RESIZE_MODE)
+    {
+      printf(RED "ERROR: incorrect resize mode\n" RESET);
       return ERROR_STATUS_STACK_POP;
     }
   }
@@ -190,7 +215,7 @@ Stack_Elem_t Stack_Pop(Stack_t* Stk)
 
   Stk->Data[Stk->Size] = POISON;
 
-  assert(Stack_Error(Stk) == EVERYTHING_OK);
+  assert(Stack_Verify(Stk) == EVERYTHING_OK);
 
   return Temp;
 }
@@ -208,7 +233,7 @@ void Stack_Destroy(Stack_t* Stk)
   Stk->Capacity = 0;
 }
 
-Stack_Error_Status Stack_Error(Stack_t* Stk)//TODO Stack_Verify
+Stack_Error_Status Stack_Verify(Stack_t* Stk)
 {
   if (Stk->Data == NULL)
   {
@@ -287,41 +312,40 @@ Stack_Error_Status Stack_Dumb(Stack_t* Stk)
   return EVERYTHING_OK;
 }
 
-Stack_Error_Status Resize_Up(Stack_t* Stk)
+Stack_Error_Status Resize(Stack_t* Stk, Mode_For_Resize Mode)
 {
-  size_t New_Capacity = 2 * (Stk->Capacity);
-  Stack_Elem_t* Pointer_Data = Stk->Data - 1;
-
-  Stack_Elem_t* New_Data = (Stack_Elem_t*)realloc(Pointer_Data,
-                            (New_Capacity + 2) * sizeof(Stack_Elem_t));// если увеличение не прошло то фатально, если уменьшение норм
-  if (New_Data == NULL)
+  size_t New_Capacity = 0;
+  switch (Mode)
   {
-    printf("ERROR: ERROR_LACK_OF_MEMORY\n");
-    return ERROR_LACK_OF_MEMORY;
+    case RESIZE_UP:
+      New_Capacity = (Stk->Capacity) * 2;
+      break;
+    
+    case RESIZE_DOWN:
+      New_Capacity = (Stk->Capacity) / 2;
+      break;
+
+    default:
+      printf(RED "ERROR: INCORRECT RESIZE MODE\n" RESET);
+      return ERROR_INCORRECT_RESIZE_MODE;
   }
-
-  New_Data[0] = LEFT_CANARY;
-  New_Data[New_Capacity + 1] = RIGHT_CANARY;
-  for (size_t i = Stk->Size + 1; i <= New_Capacity; i++)
-    New_Data[i] = POISON;
-
-  Stk->Data = New_Data + 1;
-  Stk->Capacity = New_Capacity;
-
-  return EVERYTHING_OK;
-}
-
-Stack_Error_Status Resize_Down(Stack_t* Stk)
-{
-  size_t New_Capacity = (Stk->Capacity) / 2;
+  
   Stack_Elem_t* Pointer_Data = Stk->Data - 1;
 
   Stack_Elem_t* New_Data = (Stack_Elem_t*)realloc(Pointer_Data,
                             (New_Capacity + 2) * sizeof(Stack_Elem_t));
   if (New_Data == NULL)
   {
-    printf("ERROR: ERROR_LACK_OF_MEMORY\n");
-    return ERROR_LACK_OF_MEMORY;
+    if (Mode == RESIZE_UP)
+    {
+      printf(RED "ERROR: ERROR_LACK_OF_MEMORY\n" RESET);
+      return ERROR_LACK_OF_MEMORY;
+    }
+    if (Mode == RESIZE_DOWN)
+    {
+      printf("\n\n!-!-!-!-!-!-!---Failed to reduce memory---!-!-!-!-!-!-!\n\n");
+      return EVERYTHING_OK;
+    }
   }
 
   New_Data[0] = LEFT_CANARY;
