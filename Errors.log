@@ -1,0 +1,93 @@
+Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 70
+{
+	Capacity = 5
+	Size = 0
+	Data = [0000021a8bef1458]
+	{
+		![-1] = DEADF00D (LEFT_CANARY)
+		*[0]  = DEADDEAD
+		*[1]  = DEADDEAD
+		*[2]  = DEADDEAD
+		*[3]  = DEADDEAD
+		*[4]  = DEADDEAD
+		![5]  = BAADEDAA (RIGHT_CANARY)
+	}
+}
+-------------------End-------------------
+
+Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 70
+{
+	Capacity = 20
+	Size = 15
+	Data = [0000021a8bef1458]
+	{
+		![-1] = DEADF00D (LEFT_CANARY)
+		 [0]  = 10
+		 [1]  = 20
+		 [2]  = 30
+		 [3]  = 40
+		 [4]  = 50
+		 [5]  = 60
+		 [6]  = 70
+		 [7]  = 80
+		 [8]  = 90
+		 [9]  = 100
+		 [10]  = 110
+		 [11]  = 120
+		 [12]  = 130
+		 [13]  = 140
+		 [14]  = 150
+		*[15]  = DEADDEAD
+		*[16]  = DEADDEAD
+		*[17]  = DEADDEAD
+		*[18]  = DEADDEAD
+		*[19]  = DEADDEAD
+		![20]  = BAADEDAA (RIGHT_CANARY)
+	}
+}
+-------------------End-------------------
+
+Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 70
+{
+	Capacity = 10
+	Size = 5
+	Data = [0000021a8bef1458]
+	{
+		![-1] = DEADF00D (LEFT_CANARY)
+		 [0]  = 10
+		 [1]  = 20
+		 [2]  = 30
+		 [3]  = 40
+		 [4]  = 50
+		*[5]  = DEADDEAD
+		*[6]  = DEADDEAD
+		*[7]  = DEADDEAD
+		*[8]  = DEADDEAD
+		*[9]  = DEADDEAD
+		![10]  = BAADEDAA (RIGHT_CANARY)
+	}
+}
+-------------------End-------------------
+
+Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 70
+{
+	Capacity = 10
+	Size = 0
+	Data = [0000021a8bef1458]
+	{
+		![-1] = DEADF00D (LEFT_CANARY)
+		*[0]  = DEADDEAD
+		*[1]  = DEADDEAD
+		*[2]  = DEADDEAD
+		*[3]  = DEADDEAD
+		*[4]  = DEADDEAD
+		*[5]  = DEADDEAD
+		*[6]  = DEADDEAD
+		*[7]  = DEADDEAD
+		*[8]  = DEADDEAD
+		*[9]  = DEADDEAD
+		![10]  = BAADEDAA (RIGHT_CANARY)
+	}
+}
+-------------------End-------------------
+
