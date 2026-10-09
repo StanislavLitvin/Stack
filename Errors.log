@@ -1,8 +1,8 @@
-Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
+Stack_t "Stk1" created by main() at Main.cpp: 11
 {
 	Capacity = 5
 	Size = 0
-	Data = [0000018d667d69f8]
+	Data = [000001db9ef11458]
 	{
 		![-1] = DEADF00D (LEFT_CANARY)
 		*[0]  = DEADDEAD
@@ -15,11 +15,11 @@ Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
 }
 -------------------End-------------------
 
-Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
+Stack_t "Stk1" created by main() at Main.cpp: 11
 {
 	Capacity = 20
 	Size = 15
-	Data = [0000018d667d69f8]
+	Data = [000001db9ef11458]
 	{
 		![-1] = DEADF00D (LEFT_CANARY)
 		 [0]  = 10
@@ -47,11 +47,11 @@ Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
 }
 -------------------End-------------------
 
-Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
+Stack_t "Stk1" created by main() at Main.cpp: 11
 {
 	Capacity = 10
 	Size = 5
-	Data = [0000018d667d69f8]
+	Data = [000001db9ef11458]
 	{
 		![-1] = DEADF00D (LEFT_CANARY)
 		 [0]  = 10
@@ -69,11 +69,11 @@ Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
 }
 -------------------End-------------------
 
-Stack_t "Stk1" created by main() at Stack_1.0_CANARY.cpp: 76
+Stack_t "Stk1" created by main() at Main.cpp: 11
 {
 	Capacity = 10
 	Size = 0
-	Data = [0000018d667d69f8]
+	Data = [000001db9ef11458]
 	{
 		![-1] = DEADF00D (LEFT_CANARY)
 		*[0]  = DEADDEAD
